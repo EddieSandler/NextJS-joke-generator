@@ -26,7 +26,7 @@ export default function JokeGenerator() {
       { emoji: "🔥", value: "Chris Rock" },
       { emoji: "💁‍♀️", value: "Wanda Sykes" },
       { emoji: "🌈", value: "Margaret Cho" }
-    
+
   ];
   const [state, setState] = useState({
     topic: "",
@@ -104,7 +104,7 @@ export default function JokeGenerator() {
 
 
           <div className="space-y-4 bg-opacity-25 bg-blue-700 rounded-lg p-4">
-            <h3 className="text-xl font-semibold">Voices</h3>
+            <h3 className="text-xl font-semibold">Comedians</h3>
 
             <div className="flex flex-wrap justify-center">
               {voices.map(({ value, emoji }) => (
