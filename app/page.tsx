@@ -16,10 +16,22 @@ export default function JokeGenerator() {
     { emoji: "😜", value: "Sarcastic" },
     { emoji: "🤣", value: "Witty" },
     { emoji: "😂", value: "Goofy" },
+    { emoji: "😂", value: "knock knock" },
+  ];
+  const voices = [
+
+      { emoji: "☕️", value: "Jerry Seinfeld" },
+      { emoji: "😜", value: "Kevin Hart" },
+      { emoji: "🤣", value: "Eddie Murphy" },
+      { emoji: "🔥", value: "Chris Rock" },
+      { emoji: "💁‍♀️", value: "Wanda Sykes" },
+      { emoji: "🌈", value: "Margaret Cho" }
+    
   ];
   const [state, setState] = useState({
     topic: "",
     tone: "",
+    voice: "",
   });
 
   const handleChange = ({
@@ -90,13 +102,38 @@ export default function JokeGenerator() {
             </div>
           </div>
 
+
+          <div className="space-y-4 bg-opacity-25 bg-blue-700 rounded-lg p-4">
+            <h3 className="text-xl font-semibold">Voices</h3>
+
+            <div className="flex flex-wrap justify-center">
+              {voices.map(({ value, emoji }) => (
+                <div
+                  key={value}
+                  className="p-4 m-2 bg-opacity-25 bg-gray-600 rounded-lg"
+                >
+                  <input
+                    id={value}
+                    type="radio"
+                    name="voice"
+                    value={value}
+                    onChange={handleChange}
+                  />
+                  <label className="ml-2" htmlFor={value}>
+                    {`${emoji} ${value}`}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-            disabled={isLoading || !state.topic || !state.tone}
+            disabled={isLoading || !state.topic || !state.tone ||!state.voice}
             onClick={() =>
               append({
                 role: "user",
-                content: `Generate a joke about ${state.topic} in a ${state.tone} tone`,
+                content: `Generate a joke about ${state.topic} in a ${state.tone} tone. Voiced by ${state.voice}.`,
               })
             }
           >
