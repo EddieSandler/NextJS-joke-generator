@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useChat } from "ai/react";
+import Sentiment from "sentiment";
+
+interface SentimentResult {
+  score: number;
+  comparative: number;
+  positive: string[];
+  negative: string[];
+  funnyScore?: number;  // Custom score to determine how funny the joke is
+}
 
 export default function JokeGenerator() {
   const { messages, append, isLoading } = useChat();
@@ -13,28 +22,36 @@ export default function JokeGenerator() {
     { emoji: "🗳️", value: "Politics" },
   ];
   const tones = [
-
     { emoji: "😜", value: "Sarcastic" },
     { emoji: "🤣", value: "Witty" },
     { emoji: "😂", value: "Goofy" },
-    { emoji: "😂", value: "knock knock" },
+    { emoji: "😂", value: "Knock Knock" },
   ];
   const voices = [
-
-      { emoji: "☕️", value: "Jerry Seinfeld" },
-      { emoji: "😜", value: "Kevin Hart" },
-      { emoji: "💁‍♀️", value: "Wanda Sykes" },
-      { emoji: "🌈", value: "Margaret Cho" },
-      { emoji: "🤣", value: "Eddie Murphy" },
-      { emoji: "🔥", value: "Chris Rock" },
-
-
+    { emoji: "☕️", value: "Jerry Seinfeld" },
+    { emoji: "😜", value: "Kevin Hart" },
+    { emoji: "💁‍♀️", value: "Wanda Sykes" },
+    { emoji: "🌈", value: "Margaret Cho" },
+    { emoji: "🤣", value: "Eddie Murphy" },
+    { emoji: "🔥", value: "Chris Rock" },
   ];
   const [state, setState] = useState({
     topic: "",
     tone: "",
     voice: "",
   });
+  const [sentimentResult, setSentimentResult] = useState<SentimentResult | null>(null);
+
+  const customWords = {
+    hilarious: 5,
+    laugh: 3,
+    joke: 2,
+    boring: -3,
+    "not funny": -5,
+    // Add more custom words and their sentiment scores
+  };
+
+  const sentiment = new Sentiment();
 
   const handleChange = ({
     target: { name, value },
@@ -45,6 +62,18 @@ export default function JokeGenerator() {
     });
   };
 
+  useEffect(() => {
+    if (messages.length > 0 && !messages[messages.length - 1]?.content.startsWith("Generate")) {
+      const joke = messages[messages.length - 1].content;
+      const result = sentiment.analyze(joke, { extras: customWords });
+
+      // Custom logic to determine how funny the joke is
+      const funnyScore = result.score + result.positive.length * 2 - result.negative.length * 2;
+
+      setSentimentResult({ ...result, funnyScore });
+    }
+  }, [messages]);
+
   return (
     <main className="mx-auto w-full p-24 flex flex-col">
       <div className="p4 m-4">
@@ -52,7 +81,7 @@ export default function JokeGenerator() {
           <div className="space-y-2">
             <h2 className="text-3xl font-bold">Joke Generator</h2>
             <p className="text-zinc-500 dark:text-zinc-400">
-              Customize the joke by selecting a topic, tone and a famous comedian.
+              Customize the joke by selecting a topic, tone, and a famous comedian.
             </p>
           </div>
 
@@ -104,7 +133,6 @@ export default function JokeGenerator() {
             </div>
           </div>
 
-
           <div className="space-y-4 bg-opacity-25 bg-blue-700 rounded-lg p-4">
             <h3 className="text-xl font-semibold">Comedians</h3>
 
@@ -131,7 +159,7 @@ export default function JokeGenerator() {
 
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-            disabled={isLoading || !state.topic || !state.tone ||!state.voice}
+            disabled={isLoading || !state.topic || !state.tone || !state.voice}
             onClick={() =>
               append({
                 role: "user",
@@ -149,7 +177,25 @@ export default function JokeGenerator() {
             }
             className="bg-opacity-25 bg-blue-700 rounded-lg p-4 text-black"
           >
-            {messages[messages.length - 1]?.content}
+            <p>{messages[messages.length - 1]?.content}</p>
+            {sentimentResult && (
+              <div className="mt-4 p-2 bg-opacity-50 bg-gray-500 rounded-lg">
+                <h4 className="text-lg font-semibold">Sentiment Analysis</h4>
+                <p>Score: {sentimentResult.score}</p>
+                <p>Comparative: {sentimentResult.comparative.toFixed(2)}</p>
+                <p>Positive Words: {sentimentResult.positive.join(", ")}</p>
+                <p>Negative Words: {sentimentResult.negative.join(", ")}</p>
+                <p>Funny Score: {sentimentResult.funnyScore}</p>
+                <p>
+                  Overall Sentiment:{" "}
+                  {sentimentResult.score > 0
+                    ? "Positive"
+                    : sentimentResult.score < 0
+                    ? "Negative"
+                    : "Neutral"}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
