@@ -10,9 +10,10 @@ export default function JokeGenerator() {
     { emoji: "👥", value: "People" },
     { emoji: "🐶", value: "Animals" },
     { emoji: "🍔", value: "Food" },
+    { emoji: "🗳️", value: "Politics" },
   ];
   const tones = [
-    { emoji: "😂", value: "Funny" },
+
     { emoji: "😜", value: "Sarcastic" },
     { emoji: "🤣", value: "Witty" },
     { emoji: "😂", value: "Goofy" },
@@ -22,10 +23,11 @@ export default function JokeGenerator() {
 
       { emoji: "☕️", value: "Jerry Seinfeld" },
       { emoji: "😜", value: "Kevin Hart" },
+      { emoji: "💁‍♀️", value: "Wanda Sykes" },
+      { emoji: "🌈", value: "Margaret Cho" },
       { emoji: "🤣", value: "Eddie Murphy" },
       { emoji: "🔥", value: "Chris Rock" },
-      { emoji: "💁‍♀️", value: "Wanda Sykes" },
-      { emoji: "🌈", value: "Margaret Cho" }
+
 
   ];
   const [state, setState] = useState({
@@ -50,7 +52,7 @@ export default function JokeGenerator() {
           <div className="space-y-2">
             <h2 className="text-3xl font-bold">Joke Generator</h2>
             <p className="text-zinc-500 dark:text-zinc-400">
-              Customize the joke by selecting the topic and tone.
+              Customize the joke by selecting a topic, tone and a famous comedian.
             </p>
           </div>
 
