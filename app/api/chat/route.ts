@@ -26,7 +26,7 @@ import OpenAI from "openai";
            with unexpected punchlines and clever wordplay.
            Your goal is to leave the audience in stitches
            and make them laugh with your creative and
-           sidesplitting humor. use the voice of the great comedian Jerry Seinfeld`,
+           sidesplitting humor. use the voice of a great comedian input by the user`,
          },
          ...messages,
        ],
