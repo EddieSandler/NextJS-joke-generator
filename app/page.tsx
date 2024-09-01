@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { useChat } from "ai/react";
 import Sentiment from "sentiment";
 
+// Interface for sentiment analysis result
 interface SentimentResult {
   score: number;
   comparative: number;
   positive: string[];
   negative: string[];
-  funnyScore?: number;  // Custom score to determine how funny the joke is
+  funnyScore?: number;
 }
 
 export default function JokeGenerator() {
@@ -25,7 +26,7 @@ export default function JokeGenerator() {
     { emoji: "😜", value: "Sarcastic" },
     { emoji: "🤣", value: "Witty" },
     { emoji: "😂", value: "Goofy" },
-    { emoji: "😂", value: "Knock Knock" },
+    { emoji: "🔔", value: "Knock Knock" },
   ];
   const voices = [
     { emoji: "☕️", value: "Jerry Seinfeld" },
@@ -48,14 +49,12 @@ export default function JokeGenerator() {
     joke: 2,
     boring: -3,
     "not funny": -5,
-    // Add more custom words and their sentiment scores
   };
 
   const sentiment = new Sentiment();
 
-  const handleChange = ({
-    target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     setState({
       ...state,
       [name]: value,
@@ -67,7 +66,6 @@ export default function JokeGenerator() {
       const joke = messages[messages.length - 1].content;
       const result = sentiment.analyze(joke, { extras: customWords });
 
-      // Custom logic to determine how funny the joke is
       const funnyScore = result.score + result.positive.length * 2 - result.negative.length * 2;
 
       setSentimentResult({ ...result, funnyScore });
@@ -75,90 +73,89 @@ export default function JokeGenerator() {
   }, [messages]);
 
   return (
-    <main className="mx-auto w-full p-24 flex flex-col">
-      <div className="p4 m-4">
-        <div className="flex flex-col items-center justify-center space-y-8 text-black">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold">Joke Generator</h2>
-            <p className="text-zinc-500 dark:text-zinc-400">
-              Customize the joke by selecting a topic, tone, and a famous comedian.
+    <main className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-indigo-600 via-blue-500 to-warm-gray-900 overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute top-0 left-0 w-full h-full z-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-noise opacity-20"></div>
+        <div className="w-64 h-64 rounded-full bg-white opacity-10 absolute animate-pulse"></div>
+        <div className="w-96 h-96 rounded-full bg-white opacity-10 absolute top-32 right-32 animate-pulse"></div>
+      </div>
+
+      {/* Content Wrapper */}
+      <div className="relative z-10 w-full max-w-3xl p-8 bg-white bg-opacity-30 rounded-xl shadow-xl backdrop-blur-md">
+        <div className="flex flex-col items-center justify-center space-y-12 text-white">
+          
+          {/* Header Section */}
+          <div className="text-center">
+            <h2 className="text-5xl font-extrabold drop-shadow-md">Joke Generator</h2>
+            <p className="mt-2 text-lg text-gray-200">
+              Customize and generate your joke by selecting a topic, tone, and voice.
             </p>
           </div>
 
-          <div className="space-y-4 bg-opacity-25 bg-blue-700 rounded-lg p-4">
-            <h3 className="text-xl font-semibold">Topic</h3>
-
-            <div className="flex flex-wrap justify-center">
-              {topics.map(({ value, emoji }) => (
-                <div
-                  key={value}
-                  className="p-4 m-2 bg-opacity-25 bg-gray-600 rounded-lg"
-                >
-                  <input
-                    id={value}
-                    type="radio"
-                    value={value}
-                    name="topic"
-                    onChange={handleChange}
-                  />
-                  <label className="ml-2" htmlFor={value}>
-                    {`${emoji} ${value}`}
+          {/* Selection Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Topic Card */}
+            <div className="bg-white bg-opacity-40 rounded-lg p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+              <h3 className="text-2xl font-semibold text-black">Topic</h3>
+              <div className="mt-4 space-y-2">
+                {topics.map(({ value, emoji }) => (
+                  <label key={value} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="topic"
+                      value={value}
+                      onChange={handleChange}
+                      className="form-radio h-5 w-5 text-pink-500"
+                    />
+                    <span className="text-lg text-black">{`${emoji} ${value}`}</span>
                   </label>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+
+            {/* Tone Card */}
+            <div className="bg-white bg-opacity-40 rounded-lg p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+              <h3 className="text-2xl font-semibold text-black">Tone</h3>
+              <div className="mt-4 space-y-2">
+                {tones.map(({ value, emoji }) => (
+                  <label key={value} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="tone"
+                      value={value}
+                      onChange={handleChange}
+                      className="form-radio h-5 w-5 text-pink-500"
+                    />
+                    <span className="text-lg text-black">{`${emoji} ${value}`}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Voice Card */}
+            <div className="bg-white bg-opacity-40 rounded-lg p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+              <h3 className="text-2xl font-semibold text-black">Voice</h3>
+              <div className="mt-4 space-y-2">
+                {voices.map(({ value, emoji }) => (
+                  <label key={value} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="voice"
+                      value={value}
+                      onChange={handleChange}
+                      className="form-radio h-5 w-5 text-pink-500"
+                    />
+                    <span className="text-lg text-black">{`${emoji} ${value}`}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="space-y-4 bg-opacity-25 bg-blue-700 rounded-lg p-4">
-            <h3 className="text-xl font-semibold">Tones</h3>
-
-            <div className="flex flex-wrap justify-center">
-              {tones.map(({ value, emoji }) => (
-                <div
-                  key={value}
-                  className="p-4 m-2 bg-opacity-25 bg-gray-600 rounded-lg"
-                >
-                  <input
-                    id={value}
-                    type="radio"
-                    name="tone"
-                    value={value}
-                    onChange={handleChange}
-                  />
-                  <label className="ml-2" htmlFor={value}>
-                    {`${emoji} ${value}`}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-4 bg-opacity-25 bg-blue-700 rounded-lg p-4">
-            <h3 className="text-xl font-semibold">Comedians</h3>
-
-            <div className="flex flex-wrap justify-center">
-              {voices.map(({ value, emoji }) => (
-                <div
-                  key={value}
-                  className="p-4 m-2 bg-opacity-25 bg-gray-600 rounded-lg"
-                >
-                  <input
-                    id={value}
-                    type="radio"
-                    name="voice"
-                    value={value}
-                    onChange={handleChange}
-                  />
-                  <label className="ml-2" htmlFor={value}>
-                    {`${emoji} ${value}`}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-
+          {/* Generate Joke Button */}
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+            className="relative bg-gradient-to-r from-blue-500 to-green-500 text-white font-bold py-4 px-8 rounded-full shadow-xl transform transition-transform hover:scale-105 active:scale-95"
             disabled={isLoading || !state.topic || !state.tone || !state.voice}
             onClick={() =>
               append({
@@ -167,36 +164,36 @@ export default function JokeGenerator() {
               })
             }
           >
-            Generate Joke
+            {isLoading ? "Generating..." : "Generate Joke"}
           </button>
 
-          <div
-            hidden={
-              messages.length === 0 ||
-              messages[messages.length - 1]?.content.startsWith("Generate")
-            }
-            className="bg-opacity-25 bg-blue-700 rounded-lg p-4 text-black"
-          >
-            <p>{messages[messages.length - 1]?.content}</p>
-            {sentimentResult && (
-              <div className="mt-4 p-2 bg-opacity-50 bg-gray-500 rounded-lg">
-                <h4 className="text-lg font-semibold">Sentiment Analysis</h4>
-                <p>Score: {sentimentResult.score}</p>
-                <p>Comparative: {sentimentResult.comparative.toFixed(2)}</p>
-                <p>Positive Words: {sentimentResult.positive.join(", ")}</p>
-                <p>Negative Words: {sentimentResult.negative.join(", ")}</p>
-                <p>Funny Score: {sentimentResult.funnyScore}</p>
-                <p>
-                  Overall Sentiment:{" "}
-                  {sentimentResult.score > 0
-                    ? "Positive"
-                    : sentimentResult.score < 0
-                    ? "Negative"
-                    : "Neutral"}
-                </p>
-              </div>
-            )}
-          </div>
+          {/* Display Generated Joke and Sentiment Analysis */}
+          {messages.length > 0 && !messages[messages.length - 1]?.content.startsWith("Generate") && (
+            <div className="w-full mt-8 p-6 bg-white bg-opacity-30 rounded-lg shadow-inner text-white">
+              {/* Display the latest joke */}
+              <p className="text-xl font-medium mb-4">{messages[messages.length - 1]?.content}</p>
+              
+              {/* Display sentiment analysis results if available */}
+              {sentimentResult && (
+                <div className="mt-4 p-4 bg-white bg-opacity-50 rounded-lg">
+                  <h4 className="text-xl font-semibold mb-2 text-black">Sentiment Analysis</h4>
+                  <p className="text-black"><strong>Score:</strong> {sentimentResult.score}</p>
+                  <p className="text-black"><strong>Comparative:</strong> {sentimentResult.comparative.toFixed(2)}</p>
+                  <p className="text-black"><strong>Positive Words:</strong> {sentimentResult.positive.join(", ") || "None"}</p>
+                  <p className="text-black"><strong>Negative Words:</strong> {sentimentResult.negative.join(", ") || "None"}</p>
+                  <p className="text-black"><strong>Funny Score:</strong> {sentimentResult.funnyScore}</p>
+                  <p className="text-black">
+                    <strong>Overall Sentiment:</strong>{" "}
+                    {sentimentResult.score > 0
+                      ? "Positive"
+                      : sentimentResult.score < 0
+                      ? "Negative"
+                      : "Neutral"}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </main>
